@@ -2,7 +2,6 @@
 # npm
 prettier $(git diff --cached --name-only --diff-filter=ACMR | sed 's| |\\ |g') --write --ignore-unknown
 
-npm run lint:fix
-npm run format:fix
+npx lint-staged
 
-git update-index --again
+# git update-index --again
