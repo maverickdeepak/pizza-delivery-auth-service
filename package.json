@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prepare": "husky",
-    "coverage": "jest"
+    "coverage": "jest --runInBand"
   },
   "author": "Deepak",
   "license": "ISC",
@@ -20,6 +20,7 @@
     "@types/http-errors": "^2.0.4",
     "@types/jest": "^29.5.12",
     "@types/node": "^22.3.0",
+    "@types/supertest": "^6.0.2",
     "eslint": "^9.9.0",
     "eslint-config-prettier": "^9.1.0",
     "husky": "^9.1.4",
@@ -27,6 +28,7 @@
     "lint-staged": "^15.2.9",
     "nodemon": "^3.1.4",
     "prettier": "3.3.3",
+    "supertest": "^7.0.0",
     "ts-jest": "^29.2.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4",
