@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prepare": "husky",
-    "coverage": "jest --runInBand"
+    "test": "jest --runInBand"
   },
   "author": "Deepak",
   "license": "ISC",
