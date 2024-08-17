@@ -5,6 +5,9 @@ import authRouter from "./routes/auth";
 
 const app = express();
 
+// accept JSON data
+app.use(express.json());
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
