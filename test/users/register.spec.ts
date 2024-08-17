@@ -144,5 +144,23 @@ describe("POST /auth/register", () => {
       const users = await userRepository.find();
       expect(users.length).toBe(0);
     });
+
+    it("2. should trim the firstName, lastName and email field", async () => {
+      const userData = {
+        firstName: " John ",
+        lastName: " Doe ",
+        email: " john@example.com ",
+        password: "XXXXXXXXXXX",
+      };
+
+      const response = await request(app).post("/auth/register").send(userData);
+      const userRepository = connection.getRepository(User);
+      const users = await userRepository.find();
+      const user = users[0];
+      expect(user?.firstName).toBe("John");
+      expect(user?.lastName).toBe("Doe");
+      expect(user?.email).toBe("john@example.com");
+      expect(response.statusCode).toBe(201);
+    });
   });
 });

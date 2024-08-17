@@ -5,10 +5,17 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({
+    nullable: false,
+    type: "varchar",
+    length: 255,
+  })
   firstName: string;
 
-  @Column()
+  @Column({
+    type: "varchar",
+    length: 255,
+  })
   lastName: string;
 
   @Column({
@@ -23,7 +30,11 @@ export class User {
   })
   email: string;
 
-  @Column()
+  @Column({
+    nullable: false,
+    type: "varchar",
+    length: 255,
+  })
   password: string;
 
   @Column({
