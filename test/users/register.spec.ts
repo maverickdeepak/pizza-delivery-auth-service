@@ -153,7 +153,7 @@ describe("POST /auth/register", () => {
       }
       // assert
       let accessToken = null;
-      // let refreshToken = null;
+      let refreshToken = null;
       const cookies =
         (response.headers as unknown as Headers)["set-cookie"] || [];
 
@@ -162,13 +162,13 @@ describe("POST /auth/register", () => {
           accessToken = cookie.split("=")[1].split(";")[0];
         }
 
-        // if (cookie.startsWith("refreshToken=")) {
-        //   refreshToken = cookie.split("=")[1].split(";")[0];
-        // }
+        if (cookie.startsWith("refreshToken=")) {
+          refreshToken = cookie.split("=")[1].split(";")[0];
+        }
       });
-      console.log("accessToken", accessToken);
+
       expect(accessToken).not.toBeNull();
-      // expect(refreshToken).not.toBeNull();
+      expect(refreshToken).not.toBeNull();
 
       expect(isJwt(accessToken)).toBeTruthy();
     });
