@@ -20,7 +20,7 @@ describe("POST /auth/register", () => {
   });
 
   describe("happy path", () => {
-    it("should return 201 status code", async () => {
+    it("1. should return 201 status code", async () => {
       // arrange
       const userData = {
         firstName: "John",
@@ -34,7 +34,7 @@ describe("POST /auth/register", () => {
       expect(response.statusCode).toBe(201);
     });
 
-    it("should return valid JSON", async () => {
+    it("2. should return valid JSON", async () => {
       // arrange
       const userData = {
         firstName: "John",
@@ -50,7 +50,7 @@ describe("POST /auth/register", () => {
       );
     });
 
-    it("should persist the user in the DB", async () => {
+    it("3. should persist the user in the DB", async () => {
       // arrange
       const userData = {
         firstName: "John",
@@ -64,6 +64,20 @@ describe("POST /auth/register", () => {
       const userRepository = connection.getRepository(User);
       const users = userRepository.find();
       expect((await users).length).toBe(1);
+    });
+
+    it("4. should return an ID of the created user", async () => {
+      // arrange
+      const userData = {
+        firstName: "John",
+        lastName: "Doe",
+        email: "john@example.com",
+        password: "XXXXXXXXXXX",
+      };
+      // act
+      const response = await request(app).post("/auth/register").send(userData);
+      // assert
+      expect(response.body).toHaveProperty("id");
     });
   });
   describe("sad path", () => {});
