@@ -95,6 +95,46 @@ describe("POST /auth/register", () => {
       // assert
       expect(response.body).toHaveProperty("role", "customer");
     });
+
+    it("6. should save the password in DB as hashed password", async () => {
+      // arrange
+      const userData = {
+        firstName: "John",
+        lastName: "Doe",
+        email: "john@example.com",
+        password: "XXXXXXXXXXX",
+      };
+
+      // act
+      await request(app).post("/auth/register").send(userData);
+
+      // assert
+      const userRepository = connection.getRepository(User);
+      const user = await userRepository.findOneBy({ email: userData.email });
+      expect(user?.password).not.toBe(userData.password);
+      expect(user?.password).toHaveLength(60);
+      expect(user?.password).toMatch(/^\$2b\$\d+\$/);
+    });
+
+    it("should have unique email, if email is already exist return 409", async () => {
+      // arrange
+      const userData = {
+        firstName: "John",
+        lastName: "Doe",
+        email: "john@example.com",
+        password: "XXXXXXXXXXX",
+        role: "customer",
+      };
+      // act
+      const userRepository = connection.getRepository(User);
+      await userRepository.save(userData);
+
+      const users = await userRepository.find();
+      // assert
+      const response = await request(app).post("/auth/register").send(userData);
+      expect(response.statusCode).toBe(409);
+      expect(users.length).toBe(1);
+    });
   });
   describe("sad path", () => {});
 });

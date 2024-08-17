@@ -11,7 +11,16 @@ export class User {
   @Column()
   lastName: string;
 
-  @Column()
+  @Column({
+    unique: true,
+    nullable: false,
+    type: "varchar",
+    length: 255,
+    transformer: {
+      to: (value: string) => value.toLowerCase(),
+      from: (value: string) => value,
+    },
+  })
   email: string;
 
   @Column()
