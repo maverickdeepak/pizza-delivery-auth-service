@@ -116,7 +116,7 @@ describe("POST /auth/register", () => {
       expect(user?.password).toMatch(/^\$2b\$\d+\$/);
     });
 
-    it("should have unique email, if email is already exist return 409", async () => {
+    it("7. should have unique email, if email is already exist return 409", async () => {
       // arrange
       const userData = {
         firstName: "John",
@@ -136,5 +136,13 @@ describe("POST /auth/register", () => {
       expect(users.length).toBe(1);
     });
   });
-  describe("sad path", () => {});
+  describe("sad path", () => {
+    it("1. should return 400 when no data is provided", async () => {
+      const response = await request(app).post("/auth/register").send({});
+      expect(response.statusCode).toBe(400);
+      const userRepository = connection.getRepository(User);
+      const users = await userRepository.find();
+      expect(users.length).toBe(0);
+    });
+  });
 });
