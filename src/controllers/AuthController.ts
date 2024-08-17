@@ -2,6 +2,7 @@ import { NextFunction, Response } from "express";
 import { RegisterUserRequest } from "../types";
 import { UserService } from "../services/UserService";
 import { Logger } from "winston";
+import { Role } from "../constants";
 
 export class AuthController {
   constructor(
@@ -18,9 +19,10 @@ export class AuthController {
         lastName,
         email,
         password,
+        role: Role.CUSTOMER,
       });
       this.logger.info(`User created: ${user.id}`);
-      res.status(201).json({ id: user.id });
+      res.status(201).json({ id: user.id, role: user.role });
     } catch (error) {
       next(error);
       return;

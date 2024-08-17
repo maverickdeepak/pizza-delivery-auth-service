@@ -2,7 +2,6 @@ import request from "supertest";
 import app from "../../src/app";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
-import truncateTables from "../utils";
 import { User } from "../../src/entity/User";
 
 describe("POST /auth/register", () => {
@@ -12,7 +11,9 @@ describe("POST /auth/register", () => {
   });
 
   beforeEach(async () => {
-    await truncateTables(connection);
+    await connection.dropDatabase();
+    await connection.synchronize();
+    // await truncateTables(connection);
   });
 
   afterAll(async () => {
@@ -78,6 +79,21 @@ describe("POST /auth/register", () => {
       const response = await request(app).post("/auth/register").send(userData);
       // assert
       expect(response.body).toHaveProperty("id");
+    });
+
+    it("5. should return a new user with customer role", async () => {
+      // arrange
+      const userData = {
+        firstName: "John",
+        lastName: "Doe",
+        email: "john@example.com",
+        password: "XXXXXXXXXXX",
+        role: "customer",
+      };
+      // act
+      const response = await request(app).post("/auth/register").send(userData);
+      // assert
+      expect(response.body).toHaveProperty("role", "customer");
     });
   });
   describe("sad path", () => {});
