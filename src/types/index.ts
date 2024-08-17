@@ -1,6 +1,6 @@
 import { Request } from "express";
 
-interface UserData {
+export interface UserData {
   firstName: string;
   lastName: string;
   email: string;
