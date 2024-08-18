@@ -101,6 +101,15 @@ export class AuthController {
 
       const accessToken = this.tokenService.generateAccessToken(payload);
 
+      // add token to cookie
+      res.cookie("accessToken", accessToken, {
+        domain: "localhost",
+        httpOnly: true,
+        // secure: true,
+        sameSite: "strict",
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+      });
+
       res.status(200).json({ accessToken });
     } catch (error) {
       next(error);
