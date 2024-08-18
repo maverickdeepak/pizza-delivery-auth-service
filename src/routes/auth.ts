@@ -11,11 +11,15 @@ import { User } from "../entity/User";
 import logger from "../config/logger";
 import registerValidators from "../validators/register.validators";
 import { TokenService } from "../services/TokenService";
+import { RefreshToken } from "../entity/RefreshToken";
 
 // create user repository
 const userRepository = AppDataSource.getRepository(User);
 const userService = new UserService(userRepository);
-const tokenService = new TokenService();
+
+// create token repository
+const tokenRepository = AppDataSource.getRepository(RefreshToken);
+const tokenService = new TokenService(tokenRepository);
 
 // create instance of auth controller and pass user service as dependency
 const auth = new AuthController(userService, logger, tokenService);

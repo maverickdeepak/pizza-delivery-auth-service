@@ -6,8 +6,6 @@ import { Logger } from "winston";
 import { Role } from "../constants";
 import { validationResult } from "express-validator";
 
-import { AppDataSource } from "../config/data-source";
-import { RefreshToken } from "../entity/RefreshToken";
 import { TokenService } from "../services/TokenService";
 
 export class AuthController {
@@ -45,12 +43,7 @@ export class AuthController {
 
       const accessToken = this.tokenService.generateAccessToken(payload);
 
-      // save the refresh token to DB
-      const refreshTokenRepo = AppDataSource.getRepository(RefreshToken);
-      const newRefreshToken = await refreshTokenRepo.save({
-        user: user,
-        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // will expire in 30 days
-      });
+      const newRefreshToken = await this.tokenService.persistRefreshToken(user);
 
       const refreshToken = this.tokenService.generateRefreshToken({
         ...payload,
