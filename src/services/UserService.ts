@@ -43,7 +43,7 @@ export class UserService {
     }
 
     try {
-      // check the user password
+      // check the user password and decode it
       const decryptPassword = await bcrypt.compare(password, user.password);
       if (!decryptPassword) {
         const error = createHttpError(401, "Invalid credentials.");
