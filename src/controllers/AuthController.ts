@@ -1,4 +1,4 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { JwtPayload } from "jsonwebtoken";
 import { RegisterUserRequest } from "../types";
 import { UserService } from "../services/UserService";
@@ -15,6 +15,7 @@ export class AuthController {
     private tokenService: TokenService,
   ) {}
 
+  // register a new user
   async register(req: RegisterUserRequest, res: Response, next: NextFunction) {
     // validate the req
     const result = validationResult(req);
@@ -69,6 +70,38 @@ export class AuthController {
       });
 
       res.status(201).json({ id: user.id, role: user.role });
+    } catch (error) {
+      next(error);
+      return;
+    }
+  }
+
+  // login user
+  async login(req: Request, res: Response, next: NextFunction) {
+    // validate the req in express-validator
+    const result = validationResult(req);
+
+    if (!result.isEmpty()) {
+      return res.status(400).json({ errors: result.array() });
+    }
+
+    const { email, password } = req.body;
+    this.logger.debug(`Logging in user: ${email}`);
+
+    try {
+      const validateUser = await this.userService.checkUserExist(
+        email,
+        password,
+      );
+
+      const payload: JwtPayload = {
+        id: validateUser.id,
+        role: validateUser.role,
+      };
+
+      const accessToken = this.tokenService.generateAccessToken(payload);
+
+      res.status(200).json({ accessToken });
     } catch (error) {
       next(error);
       return;

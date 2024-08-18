@@ -12,6 +12,7 @@ import logger from "../config/logger";
 import registerValidators from "../validators/register.validators";
 import { TokenService } from "../services/TokenService";
 import { RefreshToken } from "../entity/RefreshToken";
+import loginValidators from "../validators/login.validators";
 
 // create user repository
 const userRepository = AppDataSource.getRepository(User);
@@ -29,6 +30,14 @@ router.post(
   registerValidators,
   (req: Request, res: Response, next: NextFunction) =>
     auth.register(req, res, next),
+);
+
+router.post(
+  "/login",
+  loginValidators,
+  (req: Request, res: Response, next: NextFunction) => {
+    auth.login(req, res, next);
+  },
 );
 
 export default router;

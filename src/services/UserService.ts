@@ -32,4 +32,27 @@ export class UserService {
       throw error || err;
     }
   }
+
+  async checkUserExist(email: string, password: string) {
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    // check if user exist
+    if (!user) {
+      const error = createHttpError(401, "Invalid credentials");
+      throw error;
+    }
+
+    try {
+      // check the user password
+      const decryptPassword = await bcrypt.compare(password, user.password);
+      if (!decryptPassword) {
+        const error = createHttpError(401, "Invalid credentials.");
+        throw error;
+      }
+      return user;
+    } catch (err) {
+      const error = createHttpError(500, "Invalid credentials.");
+      throw error || err;
+    }
+  }
 }
