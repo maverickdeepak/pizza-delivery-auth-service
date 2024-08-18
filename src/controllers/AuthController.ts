@@ -110,6 +110,7 @@ export class AuthController {
         maxAge: 24 * 60 * 60 * 1000, // 1 day
       });
 
+      this.logger.info(`User logged in: ${validateUser.id}`);
       res.status(200).json({ id: validateUser.id, role: validateUser.role });
     } catch (error) {
       next(error);
