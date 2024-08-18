@@ -1,19 +1,20 @@
-import fs from "fs";
-import path from "path";
 import { NextFunction, Response } from "express";
-import { JwtPayload, sign } from "jsonwebtoken";
+import { JwtPayload } from "jsonwebtoken";
 import { RegisterUserRequest } from "../types";
 import { UserService } from "../services/UserService";
 import { Logger } from "winston";
 import { Role } from "../constants";
 import { validationResult } from "express-validator";
-import createHttpError from "http-errors";
-import { Config } from "../config";
+
+import { AppDataSource } from "../config/data-source";
+import { RefreshToken } from "../entity/RefreshToken";
+import { TokenService } from "../services/TokenService";
 
 export class AuthController {
   constructor(
     private userService: UserService,
     private logger: Logger,
+    private tokenService: TokenService,
   ) {}
 
   async register(req: RegisterUserRequest, res: Response, next: NextFunction) {
@@ -37,34 +38,23 @@ export class AuthController {
       });
       this.logger.info(`User created: ${user.id}`);
 
-      // read the PEM file and store that file as private key
-      let privateKey: Buffer;
-      try {
-        privateKey = fs.readFileSync(
-          path.join(__dirname, "../../certs/private.pem"),
-        );
-      } catch (error) {
-        const err =
-          createHttpError(500, "Error while reading private keys.") || error;
-        return next(err);
-      }
       const payload: JwtPayload = {
         id: user.id,
         role: user.role,
       };
 
-      // generate access token
-      const accessToken = sign(payload, privateKey, {
-        algorithm: "RS256",
-        expiresIn: "1d",
-        issuer: "auth-service",
+      const accessToken = this.tokenService.generateAccessToken(payload);
+
+      // save the refresh token to DB
+      const refreshTokenRepo = AppDataSource.getRepository(RefreshToken);
+      const newRefreshToken = await refreshTokenRepo.save({
+        user: user,
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // will expire in 30 days
       });
 
-      // generate refresh token
-      const refreshToken = sign(payload, Config.REFRESH_TOKEN_SECRET!, {
-        algorithm: "HS256",
-        expiresIn: "30d",
-        issuer: "auth-service",
+      const refreshToken = this.tokenService.generateRefreshToken({
+        ...payload,
+        jwtid: newRefreshToken.id,
       });
 
       // set access token to cookie

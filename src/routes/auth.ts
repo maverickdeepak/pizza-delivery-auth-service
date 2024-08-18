@@ -10,13 +10,15 @@ import { AppDataSource } from "../config/data-source";
 import { User } from "../entity/User";
 import logger from "../config/logger";
 import registerValidators from "../validators/register.validators";
+import { TokenService } from "../services/TokenService";
 
 // create user repository
 const userRepository = AppDataSource.getRepository(User);
 const userService = new UserService(userRepository);
+const tokenService = new TokenService();
 
 // create instance of auth controller and pass user service as dependency
-const auth = new AuthController(userService, logger);
+const auth = new AuthController(userService, logger, tokenService);
 
 router.post(
   "/register",
